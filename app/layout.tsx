@@ -25,7 +25,7 @@ export default function RootLayout({
 
           <AppHeader />
 
-          <main className="mx-auto flex w-full max-w-7xl flex-col px-4 pb-12 pt-8 sm:px-6 lg:px-8">
+          <main className="mx-auto flex w-full max-w-[1500px] flex-col px-3 pb-8 pt-6 sm:px-4 lg:px-5">
             {children}
           </main>
         </div>

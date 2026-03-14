@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 type NavItem = {
   href: string;
@@ -16,6 +16,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export function AppHeader() {
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/78 backdrop-blur-xl">
@@ -37,9 +38,10 @@ export function AppHeader() {
               pathname === item.href || pathname.startsWith(`${item.href}/`);
 
             return (
-              <Link
+              <button
                 key={item.href}
-                href={item.href}
+                type="button"
+                onClick={() => router.push(item.href)}
                 className={`inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium transition ${
                   item.label === "Convert MJML"
                     ? "bg-[linear-gradient(135deg,#2563eb,#4f46e5)] text-white shadow-[0_14px_24px_rgba(37,99,235,0.22)] hover:brightness-105"
@@ -49,7 +51,7 @@ export function AppHeader() {
                 }`}
               >
                 {item.label}
-              </Link>
+              </button>
             );
           })}
         </nav>
