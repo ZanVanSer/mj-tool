@@ -9,7 +9,9 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/output", label: "Convert MJML" },
+  { href: "/", label: "MJML Preview" },
+  { href: "/output", label: "MJML to HTML" },
+  { href: "/html-preview", label: "HTML Preview" },
   { href: "/analyze", label: "Analyze" },
   { href: "/settings", label: "Settings" },
 ];
@@ -43,11 +45,9 @@ export function AppHeader() {
                 type="button"
                 onClick={() => router.push(item.href)}
                 className={`inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium transition ${
-                  item.label === "Convert MJML"
+                  isActive
                     ? "bg-[linear-gradient(135deg,#2563eb,#4f46e5)] text-white shadow-[0_14px_24px_rgba(37,99,235,0.22)] hover:brightness-105"
-                    : isActive
-                      ? "border border-slate-300 bg-slate-950 text-white"
-                      : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
                 }`}
               >
                 {item.label}

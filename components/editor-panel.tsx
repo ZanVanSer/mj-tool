@@ -5,8 +5,10 @@ import { oneDark } from "@codemirror/theme-one-dark";
 import type { MjmlIssue } from "@/types/conversion";
 
 type EditorPanelProps = {
-  mjml: string;
-  onMjmlChange: (value: string) => void;
+  code: string;
+  onCodeChange: (value: string) => void;
+  title: string;
+  languageLabel: string;
   errors: MjmlIssue[];
   warnings: MjmlIssue[];
   requestError: string | null;
@@ -14,8 +16,10 @@ type EditorPanelProps = {
 };
 
 export function EditorPanel({
-  mjml,
-  onMjmlChange,
+  code,
+  onCodeChange,
+  title,
+  languageLabel,
   errors,
   warnings,
   requestError,
@@ -26,14 +30,14 @@ export function EditorPanel({
       <div className="mb-3 flex items-center justify-between text-xs uppercase tracking-[0.28em] text-slate-400">
         <span className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-          MJML Editor
+          {title}
         </span>
-        <span>{isRefreshing ? "compiling..." : "utf-8"}</span>
+        <span>{isRefreshing ? "refreshing..." : languageLabel}</span>
       </div>
 
       <div className="min-h-[560px] overflow-hidden rounded-[24px] border border-white/6 bg-[#091122] xl:h-[calc(100%-7.5rem)] xl:min-h-0">
         <CodeMirror
-          value={mjml}
+          value={code}
           height="100%"
           extensions={[xml()]}
           theme={oneDark}
@@ -45,7 +49,7 @@ export function EditorPanel({
             dropCursor: false,
             allowMultipleSelections: false,
           }}
-          onChange={(value) => onMjmlChange(value)}
+          onChange={(value) => onCodeChange(value)}
           className="h-full text-sm"
         />
       </div>
