@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 
 import { EditorPanel } from "@/components/editor-panel";
-import { PageIntro } from "@/components/page-intro";
 import { PreviewPanel } from "@/components/preview-panel";
 import { DEFAULT_MJML, STORAGE_KEYS } from "@/lib/storage";
 import type {
@@ -91,12 +90,7 @@ export function MainWorkspace() {
   }
 
   return (
-    <section className="space-y-6">
-      <PageIntro
-        title="Build faster email workflows from one workspace."
-        description="Write MJML, refresh a real preview on demand, and keep your working HTML ready for export and analysis."
-      />
-
+    <section>
       <div className="grid gap-4 xl:grid-cols-2">
         <EditorPanel
           mjml={mjml}
