@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MJ Tool
 
-## Getting Started
+MJ Tool is a personal web app for MJML email development. It lets you paste MJML, convert it to HTML, preview the result, inspect the generated markup, run rule-based quality checks, and tune analyzer behavior through saved settings.
 
-First, run the development server:
+## Features
+
+- MJML editor with manual preview refresh
+- Server-side MJML to HTML conversion
+- HTML output view with copy, download, minify, and open-in-new-tab actions
+- Rule-based analyzer for deliverability, structure, accessibility, compatibility, and link checks
+- Saved local settings for preview defaults and analyzer thresholds
+
+## Tech Stack
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- MJML
+- html-minifier-terser
+- Cheerio
+
+## Run Locally
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Open the app in your browser:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Note:
+- The project intentionally uses webpack for `dev` and `build` because MJML is more stable there than in Turbopack for this app.
 
-## Learn More
+## Build
 
-To learn more about Next.js, take a look at the following resources:
+To create a production build:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+To start the production server locally after building:
 
-## Deploy on Vercel
+```bash
+npm run start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This app is designed to deploy cleanly on Vercel.
+
+Typical flow:
+
+1. Push your branch to GitHub
+2. Import the repository into Vercel
+3. Use the default Next.js project settings
+4. Deploy
+
+No environment variables are required for the current version.
+
+## Storage Keys
+
+- `edt_mjml` in `sessionStorage`
+- `edt_html` in `sessionStorage`
+- `edt_analysis` in `sessionStorage`
+- `edt_settings` in `localStorage`
+
+## Project Notes
+
+- `docs/` and `design/` are ignored from git for local planning/design reference
+- Analyzer checks are implemented in `lib/analyzer.ts`
+- Settings defaults are defined in `lib/settings.ts`

@@ -5,11 +5,13 @@ import { useEffect, useState } from "react";
 import { AnalysisCategoryCard } from "@/components/analyzer/analysis-category-card";
 import { AnalysisEmptyState } from "@/components/analyzer/analysis-empty-state";
 import { AnalysisStatCard } from "@/components/analyzer/analysis-stat-card";
+import { useToast } from "@/components/toast-provider";
 import { STORAGE_KEYS } from "@/lib/storage";
 import { DEFAULT_SETTINGS, normalizeSettings } from "@/lib/settings";
 import type { AnalyzeResponse, AnalyzerSettings } from "@/types/analyzer";
 
 export function AnalyzeWorkspace() {
+  const { showToast } = useToast();
   const [html, setHtml] = useState("");
   const [analysis, setAnalysis] = useState<AnalyzeResponse | null>(null);
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
@@ -71,9 +73,10 @@ export function AnalyzeWorkspace() {
       setTimestamp(new Date().toLocaleString());
       window.sessionStorage.setItem(STORAGE_KEYS.analysis, JSON.stringify(data));
     } catch (error) {
-      setRequestError(
-        error instanceof Error ? error.message : "Failed to analyze HTML",
-      );
+      const message =
+        error instanceof Error ? error.message : "Failed to analyze HTML";
+      setRequestError(message);
+      showToast(message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -172,14 +175,21 @@ export function AnalyzeWorkspace() {
         </div>
 
         <div className="space-y-4">
-          {analysis?.categories.map((category) => (
-            <AnalysisCategoryCard
-              key={category.id}
-              category={category}
-              expanded={expandedIds.includes(category.id)}
-              onToggle={() => toggleCategory(category.id)}
-            />
-          ))}
+          {isLoading && !analysis
+            ? Array.from({ length: 3 }, (_, index) => (
+                <div
+                  key={index}
+                  className="h-24 animate-pulse rounded-[26px] border border-slate-200 bg-white"
+                />
+              ))
+            : analysis?.categories.map((category) => (
+                <AnalysisCategoryCard
+                  key={category.id}
+                  category={category}
+                  expanded={expandedIds.includes(category.id)}
+                  onToggle={() => toggleCategory(category.id)}
+                />
+              ))}
         </div>
       </div>
     </section>

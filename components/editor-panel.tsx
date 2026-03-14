@@ -1,3 +1,7 @@
+import CodeMirror from "@uiw/react-codemirror";
+import { xml } from "@codemirror/lang-xml";
+import { oneDark } from "@codemirror/theme-one-dark";
+
 import type { MjmlIssue } from "@/types/conversion";
 
 type EditorPanelProps = {
@@ -17,11 +21,9 @@ export function EditorPanel({
   requestError,
   isRefreshing,
 }: EditorPanelProps) {
-  const lineCount = Math.max(mjml.split("\n").length, 12);
-
   return (
     <div className="rounded-[30px] border border-white/50 bg-[linear-gradient(180deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92))] p-4 shadow-[0_24px_80px_rgba(15,23,42,0.18)] xl:h-[calc(100vh-14.5rem)] xl:min-h-[680px]">
-      <div className="mb-5 flex items-center justify-between text-xs uppercase tracking-[0.28em] text-slate-400">
+      <div className="mb-3 flex items-center justify-between text-xs uppercase tracking-[0.28em] text-slate-400">
         <span className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
           MJML Editor
@@ -29,21 +31,22 @@ export function EditorPanel({
         <span>{isRefreshing ? "compiling..." : "utf-8"}</span>
       </div>
 
-      <div className="grid min-h-[560px] grid-cols-[auto_1fr] overflow-hidden rounded-[24px] border border-white/6 bg-slate-950/80 xl:h-[calc(100%-7.5rem)] xl:min-h-0">
-        <div className="overflow-hidden border-r border-white/6 bg-slate-950/80 px-3 py-4 font-mono text-sm leading-8 text-slate-600">
-          <div className="h-full overflow-y-auto pr-1 text-right">
-          {Array.from({ length: lineCount }, (_, index) => (
-              <div key={index}>{index + 1}</div>
-          ))}
-          </div>
-        </div>
-
-        <textarea
+      <div className="min-h-[560px] overflow-hidden rounded-[24px] border border-white/6 bg-[#091122] xl:h-[calc(100%-7.5rem)] xl:min-h-0">
+        <CodeMirror
           value={mjml}
-          onChange={(event) => onMjmlChange(event.target.value)}
-          spellCheck={false}
-          className="h-full min-h-[560px] w-full resize-none overflow-auto border-none bg-transparent px-5 py-4 font-mono text-sm leading-8 text-slate-200 outline-none placeholder:text-slate-500 xl:min-h-0"
-          placeholder="Paste MJML here..."
+          height="100%"
+          extensions={[xml()]}
+          theme={oneDark}
+          basicSetup={{
+            lineNumbers: true,
+            highlightActiveLine: false,
+            highlightActiveLineGutter: false,
+            foldGutter: false,
+            dropCursor: false,
+            allowMultipleSelections: false,
+          }}
+          onChange={(value) => onMjmlChange(value)}
+          className="h-full text-sm"
         />
       </div>
 
@@ -99,15 +102,21 @@ function IssueBox({ title, items, tone }: IssueBoxProps) {
       </div>
       <div className="space-y-2">
         {items.map((item) => (
-          <p
-            key={item.id}
-            className={`text-sm leading-6 ${
-              tone === "error" ? "text-rose-100/90" : "text-amber-50/90"
-            }`}
-          >
-            {item.line ? `Line ${item.line}: ` : ""}
-            {item.message}
-          </p>
+          <div key={item.id} className="space-y-1">
+            <p
+              className={`text-sm leading-6 ${
+                tone === "error" ? "text-rose-100/90" : "text-amber-50/90"
+              }`}
+            >
+              {item.line ? `Line ${item.line}: ` : ""}
+              {item.message}
+            </p>
+            {item.snippet ? (
+              <pre className="overflow-x-auto rounded-xl bg-slate-950/70 px-3 py-2 font-mono text-xs leading-6 text-slate-200">
+                <code>{item.snippet}</code>
+              </pre>
+            ) : null}
+          </div>
         ))}
       </div>
     </div>

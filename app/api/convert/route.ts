@@ -66,6 +66,7 @@ function normalizeMjmlIssues(issues: unknown): MjmlIssue[] {
       message?: string;
       tagName?: string;
       formattedMessage?: string;
+      source?: string;
     };
 
     const rawMessage =
@@ -81,6 +82,7 @@ function normalizeMjmlIssues(issues: unknown): MjmlIssue[] {
       message: normalizedIssue.tagName
         ? `${rawMessage} (${normalizedIssue.tagName})`
         : rawMessage,
+      snippet: normalizedIssue.source?.trim(),
       type:
         lowerMessage.includes("warning") || lowerMessage.includes("deprecated")
           ? "warning"
