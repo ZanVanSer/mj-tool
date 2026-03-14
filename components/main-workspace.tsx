@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 
 import { EditorPanel } from "@/components/editor-panel";
 import { PreviewPanel } from "@/components/preview-panel";
+import { DEFAULT_SETTINGS, normalizeSettings } from "@/lib/settings";
 import { DEFAULT_MJML, STORAGE_KEYS } from "@/lib/storage";
+import type { AnalyzerSettings } from "@/types/analyzer";
 import type {
   ConvertResponse,
   DeviceMode,
@@ -16,8 +18,13 @@ export function MainWorkspace() {
   const [html, setHtml] = useState("");
   const [errors, setErrors] = useState<ConvertResponse["errors"]>([]);
   const [warnings, setWarnings] = useState<ConvertResponse["warnings"]>([]);
-  const [deviceMode, setDeviceMode] = useState<DeviceMode>("desktop");
-  const [previewTheme, setPreviewTheme] = useState<PreviewTheme>("light");
+  const [previewWidth, setPreviewWidth] = useState(DEFAULT_SETTINGS.previewWidth);
+  const [deviceMode, setDeviceMode] = useState<DeviceMode>(
+    DEFAULT_SETTINGS.previewDevice,
+  );
+  const [previewTheme, setPreviewTheme] = useState<PreviewTheme>(
+    DEFAULT_SETTINGS.previewTheme,
+  );
   const [isLoaded, setIsLoaded] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
@@ -25,6 +32,7 @@ export function MainWorkspace() {
   useEffect(() => {
     const storedMjml = window.sessionStorage.getItem(STORAGE_KEYS.mjml);
     const storedHtml = window.sessionStorage.getItem(STORAGE_KEYS.html);
+    const rawSettings = window.localStorage.getItem(STORAGE_KEYS.settings);
 
     if (storedMjml) {
       setMjml(storedMjml);
@@ -32,6 +40,15 @@ export function MainWorkspace() {
 
     if (storedHtml) {
       setHtml(storedHtml);
+    }
+
+    if (rawSettings) {
+      const settings = normalizeSettings(
+        JSON.parse(rawSettings) as Partial<AnalyzerSettings>,
+      );
+      setPreviewWidth(settings.previewWidth);
+      setDeviceMode(settings.previewDevice);
+      setPreviewTheme(settings.previewTheme);
     }
 
     setIsLoaded(true);
@@ -102,6 +119,7 @@ export function MainWorkspace() {
         />
         <PreviewPanel
           html={html}
+          previewWidth={previewWidth}
           deviceMode={deviceMode}
           onDeviceModeChange={setDeviceMode}
           previewTheme={previewTheme}

@@ -2,6 +2,7 @@ import type { DeviceMode, PreviewTheme } from "@/types/conversion";
 
 type PreviewPanelProps = {
   html: string;
+  previewWidth: number;
   deviceMode: DeviceMode;
   onDeviceModeChange: (value: DeviceMode) => void;
   previewTheme: PreviewTheme;
@@ -13,6 +14,7 @@ type PreviewPanelProps = {
 
 export function PreviewPanel({
   html,
+  previewWidth,
   deviceMode,
   onDeviceModeChange,
   previewTheme,
@@ -21,7 +23,7 @@ export function PreviewPanel({
   isRefreshing,
   requestError,
 }: PreviewPanelProps) {
-  const previewWidth = deviceMode === "desktop" ? "100%" : "375px";
+  const frameWidth = deviceMode === "desktop" ? `${previewWidth}px` : "375px";
   const hasHtml = html.trim().length > 0;
 
   return (
@@ -111,7 +113,7 @@ export function PreviewPanel({
         >
           <div
             className="mx-auto overflow-hidden rounded-[20px] border border-slate-200 bg-white transition-[width] duration-200 xl:flex xl:min-h-0 xl:flex-1 xl:flex-col"
-            style={{ width: previewWidth, maxWidth: "100%" }}
+            style={{ width: frameWidth, maxWidth: "100%" }}
           >
             {hasHtml ? (
               <iframe

@@ -1,18 +1,5 @@
-import { PlaceholderCard } from "@/components/placeholder-card";
+import { SettingsWorkspace } from "@/components/settings-workspace";
 
 export default function SettingsPage() {
-  return (
-    <section className="space-y-6">
-      <div className="grid gap-6 xl:grid-cols-2">
-        <PlaceholderCard
-          title="Preview Settings"
-          description="Default width, preferred device, and theme controls will live here."
-        />
-        <PlaceholderCard
-          title="Analyzer Thresholds"
-          description="HTML size threshold, spam sensitivity, and link-check preferences will be connected in Phase 6."
-        />
-      </div>
-    </section>
-  );
+  return <SettingsWorkspace />;
 }
