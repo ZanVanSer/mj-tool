@@ -13,6 +13,9 @@ import type { AnalyzeResponse, AnalyzerSettings } from "@/types/analyzer";
 export function AnalyzeWorkspace() {
   const { showToast } = useToast();
   const [html, setHtml] = useState("");
+  const [mjmlHtml, setMjmlHtml] = useState("");
+  const [htmlPreviewSource, setHtmlPreviewSource] = useState("");
+  const [source, setSource] = useState<"mjml" | "html">("mjml");
   const [analysis, setAnalysis] = useState<AnalyzeResponse | null>(null);
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -21,11 +24,21 @@ export function AnalyzeWorkspace() {
   const [timestamp, setTimestamp] = useState<string>("");
 
   useEffect(() => {
-    const storedHtml = window.sessionStorage.getItem(STORAGE_KEYS.html) ?? "";
+    const storedMjmlHtml = window.sessionStorage.getItem(STORAGE_KEYS.html) ?? "";
+    const storedHtmlPreview =
+      window.sessionStorage.getItem(STORAGE_KEYS.htmlPreview) ?? "";
 
-    setHtml(storedHtml);
+    setMjmlHtml(storedMjmlHtml);
+    setHtmlPreviewSource(storedHtmlPreview);
+    setSource(storedMjmlHtml ? "mjml" : "html");
+    setHtml(storedMjmlHtml || storedHtmlPreview);
     setIsLoaded(true);
   }, []);
+
+  useEffect(() => {
+    const selectedHtml = source === "mjml" ? mjmlHtml : htmlPreviewSource;
+    setHtml(selectedHtml);
+  }, [source, mjmlHtml, htmlPreviewSource]);
 
   useEffect(() => {
     if (!isLoaded || !html) {
@@ -109,6 +122,33 @@ export function AnalyzeWorkspace() {
   return (
     <section>
       <div className="flex flex-col gap-4 rounded-[30px] border border-slate-200/80 bg-white/90 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setSource("mjml")}
+            disabled={!mjmlHtml}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+              source === "mjml"
+                ? "bg-slate-950 text-white"
+                : "border border-slate-200 bg-white text-slate-600 hover:text-slate-900 disabled:cursor-not-allowed disabled:text-slate-300"
+            }`}
+          >
+            MJML Preview
+          </button>
+          <button
+            type="button"
+            onClick={() => setSource("html")}
+            disabled={!htmlPreviewSource}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+              source === "html"
+                ? "bg-slate-950 text-white"
+                : "border border-slate-200 bg-white text-slate-600 hover:text-slate-900 disabled:cursor-not-allowed disabled:text-slate-300"
+            }`}
+          >
+            HTML Preview
+          </button>
+        </div>
+
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm text-slate-500">

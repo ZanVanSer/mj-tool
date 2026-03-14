@@ -6,20 +6,14 @@ import { EditorPanel } from "@/components/editor-panel";
 import { PreviewPanel } from "@/components/preview-panel";
 import { useToast } from "@/components/toast-provider";
 import { DEFAULT_SETTINGS, normalizeSettings } from "@/lib/settings";
-import { DEFAULT_MJML, STORAGE_KEYS } from "@/lib/storage";
+import { DEFAULT_HTML, STORAGE_KEYS } from "@/lib/storage";
 import type { AnalyzerSettings } from "@/types/analyzer";
-import type {
-  ConvertResponse,
-  DeviceMode,
-  PreviewTheme,
-} from "@/types/conversion";
+import type { DeviceMode, PreviewTheme } from "@/types/conversion";
 
-export function MainWorkspace() {
+export function HtmlPreviewWorkspace() {
   const { showToast } = useToast();
-  const [mjml, setMjml] = useState(DEFAULT_MJML);
-  const [html, setHtml] = useState("");
-  const [errors, setErrors] = useState<ConvertResponse["errors"]>([]);
-  const [warnings, setWarnings] = useState<ConvertResponse["warnings"]>([]);
+  const [htmlInput, setHtmlInput] = useState(DEFAULT_HTML);
+  const [previewHtml, setPreviewHtml] = useState("");
   const [previewWidth, setPreviewWidth] = useState(DEFAULT_SETTINGS.previewWidth);
   const [deviceMode, setDeviceMode] = useState<DeviceMode>(
     DEFAULT_SETTINGS.previewDevice,
@@ -33,16 +27,14 @@ export function MainWorkspace() {
   const [mobilePane, setMobilePane] = useState<"editor" | "preview">("editor");
 
   useEffect(() => {
-    const storedMjml = window.sessionStorage.getItem(STORAGE_KEYS.mjml);
-    const storedHtml = window.sessionStorage.getItem(STORAGE_KEYS.html);
+    const storedHtml = window.sessionStorage.getItem(STORAGE_KEYS.htmlPreview);
     const rawSettings = window.localStorage.getItem(STORAGE_KEYS.settings);
 
-    if (storedMjml) {
-      setMjml(storedMjml);
-    }
-
     if (storedHtml) {
-      setHtml(storedHtml);
+      setHtmlInput(storedHtml);
+      setPreviewHtml(storedHtml);
+    } else {
+      setPreviewHtml(DEFAULT_HTML);
     }
 
     if (rawSettings) {
@@ -62,50 +54,22 @@ export function MainWorkspace() {
       return;
     }
 
-    window.sessionStorage.setItem(STORAGE_KEYS.mjml, mjml);
-  }, [isLoaded, mjml]);
+    window.sessionStorage.setItem(STORAGE_KEYS.htmlPreview, htmlInput);
+  }, [htmlInput, isLoaded]);
 
-  useEffect(() => {
-    if (!isLoaded) {
-      return;
-    }
-
-    window.sessionStorage.setItem(STORAGE_KEYS.html, html);
-  }, [html, isLoaded]);
-
-  async function refreshPreview() {
+  function refreshPreview() {
     setIsRefreshing(true);
     setRequestError(null);
 
     try {
-      const response = await fetch("/api/convert", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ mjml }),
-      });
-
-      const data = (await response.json()) as ConvertResponse & {
-        error?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(data.error ?? "Failed to convert MJML");
+      if (!htmlInput.trim()) {
+        throw new Error("No HTML provided");
       }
 
-      setHtml(data.html);
-      setErrors(data.errors);
-      setWarnings(data.warnings);
-      if (data.errors.length === 0) {
-        showToast("Preview updated.", "success");
-      }
+      setPreviewHtml(htmlInput);
+      showToast("HTML preview updated.", "success");
     } catch (error) {
-      setHtml("");
-      setErrors([]);
-      setWarnings([]);
-      const message =
-        error instanceof Error ? error.message : "Failed to convert MJML";
+      const message = error instanceof Error ? error.message : "Failed to preview HTML";
       setRequestError(message);
       showToast(message, "error");
     } finally {
@@ -121,9 +85,7 @@ export function MainWorkspace() {
             type="button"
             onClick={() => setMobilePane("editor")}
             className={`rounded-full px-4 py-2 transition ${
-              mobilePane === "editor"
-                ? "bg-slate-950 text-white"
-                : "hover:text-slate-800"
+              mobilePane === "editor" ? "bg-slate-950 text-white" : "hover:text-slate-800"
             }`}
           >
             Editor
@@ -132,31 +94,30 @@ export function MainWorkspace() {
             type="button"
             onClick={() => setMobilePane("preview")}
             className={`rounded-full px-4 py-2 transition ${
-              mobilePane === "preview"
-                ? "bg-slate-950 text-white"
-                : "hover:text-slate-800"
+              mobilePane === "preview" ? "bg-slate-950 text-white" : "hover:text-slate-800"
             }`}
           >
             Preview
           </button>
         </div>
       </div>
+
       <div className="grid gap-4 xl:grid-cols-2">
         <div className={mobilePane === "preview" ? "hidden lg:block" : ""}>
           <EditorPanel
-            code={mjml}
-            onCodeChange={setMjml}
-            title="MJML Editor"
-            languageLabel="utf-8"
-            errors={errors}
-            warnings={warnings}
+            code={htmlInput}
+            onCodeChange={setHtmlInput}
+            title="HTML Editor"
+            languageLabel="html"
+            errors={[]}
+            warnings={[]}
             requestError={requestError}
             isRefreshing={isRefreshing}
           />
         </div>
         <div className={mobilePane === "editor" ? "hidden lg:block" : ""}>
           <PreviewPanel
-            html={html}
+            html={previewHtml}
             previewWidth={previewWidth}
             deviceMode={deviceMode}
             onDeviceModeChange={setDeviceMode}
