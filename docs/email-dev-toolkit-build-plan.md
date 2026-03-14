@@ -1,4 +1,4 @@
-# Email Dev Toolkit — Build Plan
+# MJ-tool — Build Plan
 ## Vertical Slice Implementation for LLM-Assisted Coding
 
 **Approach:** Each phase delivers one fully working, visually testable slice of the app.
