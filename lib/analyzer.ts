@@ -19,7 +19,7 @@ type Context = {
 type CheckDefinition = {
   id: string;
   name: string;
-  run: (context: Context) => AnalyzerCheck;
+  run: (context: Context) => AnalyzerCheck | Promise<AnalyzerCheck>;
 };
 
 const SPAM_TERMS_BY_SENSITIVITY = {
@@ -103,15 +103,15 @@ const SPAM_TERMS_BY_SENSITIVITY = {
   ],
 } as const;
 
-export function analyzeHtml(
+export async function analyzeHtml(
   html: string,
   settings: AnalyzerSettings,
-): AnalyzeResponse {
+): Promise<AnalyzeResponse> {
   const $ = load(html);
   const text = $("body").text().replace(/\s+/g, " ").trim();
   const context: Context = { html, text, $, settings };
 
-  const categories = buildCategories(context);
+  const categories = await buildCategories(context);
   const allChecks = categories.flatMap((category) => category.checks);
   const totalDeductions = allChecks.reduce(
     (sum, check) => sum + (check.status === "pass" ? 0 : check.deduction ?? 0),
@@ -127,9 +127,9 @@ export function analyzeHtml(
   };
 }
 
-function buildCategories(context: Context): AnalyzerCategory[] {
+async function buildCategories(context: Context): Promise<AnalyzerCategory[]> {
   return [
-    buildCategory("spam", "Spam Risk", context, [
+    await buildCategory("spam", "Spam Risk", context, [
       {
         id: "spam_trigger_words",
         name: "Spam trigger words",
@@ -216,7 +216,7 @@ function buildCategories(context: Context): AnalyzerCategory[] {
         },
       },
     ]),
-    buildCategory("structure", "HTML Structure", context, [
+    await buildCategory("structure", "HTML Structure", context, [
       {
         id: "valid_doctype",
         name: "DOCTYPE present",
@@ -316,7 +316,7 @@ function buildCategories(context: Context): AnalyzerCategory[] {
         },
       },
     ]),
-    buildCategory("images", "Images & Media", context, [
+    await buildCategory("images", "Images & Media", context, [
       {
         id: "img_alt_text",
         name: "Image alt text",
@@ -411,74 +411,8 @@ function buildCategories(context: Context): AnalyzerCategory[] {
               ),
       },
     ]),
-    buildCategory("links", "Links", context, [
-      {
-        id: "unsubscribe_link",
-        name: "Unsubscribe link",
-        run: ({ html, text }) =>
-          /unsubscribe/i.test(html) || /unsubscribe/i.test(text)
-            ? passCheck(
-                "unsubscribe_link",
-                "Unsubscribe link",
-                "An unsubscribe reference was detected.",
-              )
-            : errorCheck(
-                "unsubscribe_link",
-                "Unsubscribe link",
-                "No unsubscribe link or label was detected.",
-                1.5,
-              ),
-      },
-      {
-        id: "no_javascript_hrefs",
-        name: "JavaScript hrefs",
-        run: ({ html }) => {
-          const findings = collectRegexFindings(
-            html,
-            /href=["']javascript:[^"']*["']/gi,
-            "JavaScript href",
-          );
-
-          return findings.length
-            ? errorCheck(
-                "no_javascript_hrefs",
-                "JavaScript hrefs",
-                "JavaScript links are unsafe for email HTML.",
-                1,
-                findings,
-              )
-            : passCheck(
-                "no_javascript_hrefs",
-                "JavaScript hrefs",
-                "No JavaScript links detected.",
-              );
-        },
-      },
-      {
-        id: "no_empty_hrefs",
-        name: "Empty links",
-        run: ({ html }) => {
-          const findings = collectRegexFindings(
-            html,
-            /<a\b[^>]*href=["']\s*["'][^>]*>/gi,
-            "Empty href",
-          );
-          const deduction = Math.min(findings.length * 0.3, 0.5);
-
-          return findings.length
-            ? warningCheck(
-                "no_empty_hrefs",
-                "Empty links",
-                "Some anchor tags use empty href values.",
-                deduction,
-                undefined,
-                findings,
-              )
-            : passCheck("no_empty_hrefs", "Empty links", "No empty links detected.");
-        },
-      },
-    ]),
-    buildCategory("accessibility", "Accessibility", context, [
+    await buildLinksCategory(context),
+    await buildCategory("accessibility", "Accessibility", context, [
       {
         id: "table_role_presentation",
         name: "Presentation role on tables",
@@ -562,7 +496,7 @@ function buildCategories(context: Context): AnalyzerCategory[] {
         },
       },
     ]),
-    buildCategory("compatibility", "Email Client Compatibility", context, [
+    await buildCategory("compatibility", "Email Client Compatibility", context, [
       {
         id: "no_flexbox_grid",
         name: "Flexbox or grid usage",
@@ -662,7 +596,7 @@ function buildCategories(context: Context): AnalyzerCategory[] {
             : passCheck("no_svg_tags", "Inline SVG", "No inline SVG detected."),
       },
     ]),
-    buildCategory("performance", "Performance", context, [
+    await buildCategory("performance", "Performance", context, [
       {
         id: "html_size",
         name: "HTML size threshold",
@@ -700,7 +634,7 @@ function buildCategories(context: Context): AnalyzerCategory[] {
               ),
       },
     ]),
-    buildCategory("best_practices", "Best Practices", context, [
+    await buildCategory("best_practices", "Best Practices", context, [
       {
         id: "preheader_text",
         name: "Preheader text",
@@ -741,13 +675,91 @@ function buildCategories(context: Context): AnalyzerCategory[] {
   ];
 }
 
-function buildCategory(
+async function buildLinksCategory(context: Context) {
+  return buildCategory("links", "Links", context, [
+    {
+      id: "unsubscribe_link",
+      name: "Unsubscribe link",
+      run: ({ html, text }) =>
+        /unsubscribe/i.test(html) || /unsubscribe/i.test(text)
+          ? passCheck(
+              "unsubscribe_link",
+              "Unsubscribe link",
+              "An unsubscribe reference was detected.",
+            )
+          : errorCheck(
+              "unsubscribe_link",
+              "Unsubscribe link",
+              "No unsubscribe link or label was detected.",
+              1.5,
+            ),
+    },
+    {
+      id: "no_javascript_hrefs",
+      name: "JavaScript hrefs",
+      run: ({ html }) => {
+        const findings = collectRegexFindings(
+          html,
+          /href=["']javascript:[^"']*["']/gi,
+          "JavaScript href",
+        );
+
+        return findings.length
+          ? errorCheck(
+              "no_javascript_hrefs",
+              "JavaScript hrefs",
+              "JavaScript links are unsafe for email HTML.",
+              1,
+              findings,
+            )
+          : passCheck(
+              "no_javascript_hrefs",
+              "JavaScript hrefs",
+              "No JavaScript links detected.",
+            );
+      },
+    },
+    {
+      id: "no_empty_hrefs",
+      name: "Empty links",
+      run: ({ html }) => {
+        const findings = collectRegexFindings(
+          html,
+          /<a\b[^>]*href=["']\s*["'][^>]*>/gi,
+          "Empty href",
+        );
+        const deduction = Math.min(findings.length * 0.3, 0.5);
+
+        return findings.length
+          ? warningCheck(
+              "no_empty_hrefs",
+              "Empty links",
+              "Some anchor tags use empty href values.",
+              deduction,
+              undefined,
+              findings,
+            )
+          : passCheck("no_empty_hrefs", "Empty links", "No empty links detected.");
+      },
+    },
+    {
+      id: "broken_link_check",
+      name: "Broken link check",
+      run: async ({ html, settings }) =>
+        checkBrokenLinks(html, settings.linkCheckEnabled),
+    },
+  ]);
+}
+
+async function buildCategory(
   id: string,
   name: string,
   context: Context,
   definitions: CheckDefinition[],
-): AnalyzerCategory {
-  const checks = definitions.map((definition) => definition.run(context));
+): Promise<AnalyzerCategory> {
+  const checks = await Promise.all(
+    definitions.map((definition) => definition.run(context)),
+  );
   const status = getCategoryStatus(checks);
   const issueCount = checks.filter((check) => check.status !== "pass").length;
 
@@ -800,6 +812,77 @@ function errorCheck(
   return { id, name, status: "error", message, deduction, findings };
 }
 
+async function checkBrokenLinks(
+  html: string,
+  enabled: boolean,
+): Promise<AnalyzerCheck> {
+  if (!enabled) {
+    return passCheck(
+      "broken_link_check",
+      "Broken link check",
+      "Link checking is disabled in settings.",
+    );
+  }
+
+  const urls = extractExternalLinks(html);
+
+  if (urls.length === 0) {
+    return passCheck(
+      "broken_link_check",
+      "Broken link check",
+      "No external http/https links were found.",
+    );
+  }
+
+  const results = await Promise.all(urls.map((url) => checkUrl(url)));
+  const broken = results.filter((result) => result.status === "broken");
+  const unverifiable = results.filter((result) => result.status === "unverifiable");
+
+  if (!broken.length && !unverifiable.length) {
+    return passCheck(
+      "broken_link_check",
+      "Broken link check",
+      `Verified ${results.length} external ${results.length === 1 ? "link" : "links"} successfully.`,
+    );
+  }
+
+  const findings: AnalyzerFinding[] = [
+    ...broken.map((result, index) => ({
+      id: `broken-link-${index + 1}`,
+      label: `Broken (${result.code ?? "error"})`,
+      snippet: result.url,
+    })),
+    ...unverifiable.map((result, index) => ({
+      id: `unverified-link-${index + 1}`,
+      label: "Could not verify",
+      snippet: result.url,
+    })),
+  ];
+  const deduction = Math.min(broken.length * 0.5, 1.5);
+  const parts: string[] = [];
+
+  if (broken.length) {
+    parts.push(
+      `${broken.length} broken ${broken.length === 1 ? "link" : "links"} detected`,
+    );
+  }
+
+  if (unverifiable.length) {
+    parts.push(
+      `${unverifiable.length} ${unverifiable.length === 1 ? "link could" : "links could"} not be verified`,
+    );
+  }
+
+  return warningCheck(
+    "broken_link_check",
+    "Broken link check",
+    `${parts.join(" • ")}.`,
+    deduction,
+    undefined,
+    findings,
+  );
+}
+
 function collectElementFindings(
   html: string,
   $: CheerioAPI,
@@ -844,6 +927,51 @@ function collectRegexFindings(
   }
 
   return findings;
+}
+
+function extractExternalLinks(html: string) {
+  const matches = html.matchAll(/href=["'](https?:\/\/[^"'#\s]+)["']/gi);
+  return [...new Set(Array.from(matches, (match) => match[1]))];
+}
+
+async function checkUrl(url: string): Promise<
+  | { url: string; status: "ok"; code: number }
+  | { url: string; status: "broken"; code: number }
+  | { url: string; status: "unverifiable"; code?: number }
+> {
+  try {
+    let response = await fetch(url, {
+      method: "HEAD",
+      headers: {
+        "User-Agent": "Mozilla/5.0 EmailDevToolkit/1.0",
+      },
+      signal: AbortSignal.timeout(5000),
+      redirect: "follow",
+    });
+
+    if (response.status === 405) {
+      response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "User-Agent": "Mozilla/5.0 EmailDevToolkit/1.0",
+        },
+        signal: AbortSignal.timeout(5000),
+        redirect: "follow",
+      });
+    }
+
+    if (response.status >= 200 && response.status < 400) {
+      return { url, status: "ok", code: response.status };
+    }
+
+    if (response.status >= 400) {
+      return { url, status: "broken", code: response.status };
+    }
+
+    return { url, status: "unverifiable", code: response.status };
+  } catch {
+    return { url, status: "unverifiable" };
+  }
 }
 
 function locateSnippet(html: string, snippet: string, fromIndex: number) {
