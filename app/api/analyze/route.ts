@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     }
 
     const settings = normalizeSettings(body.settings ?? DEFAULT_SETTINGS);
-    const result: AnalyzeResponse = analyzeHtml(html, settings);
+    const result: AnalyzeResponse = await analyzeHtml(html, settings);
 
     return NextResponse.json(result);
   } catch (error) {
