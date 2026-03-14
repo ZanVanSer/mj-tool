@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { EditorPanel } from "@/components/editor-panel";
 import { PreviewPanel } from "@/components/preview-panel";
+import { useToast } from "@/components/toast-provider";
 import { DEFAULT_SETTINGS, normalizeSettings } from "@/lib/settings";
 import { DEFAULT_MJML, STORAGE_KEYS } from "@/lib/storage";
 import type { AnalyzerSettings } from "@/types/analyzer";
@@ -14,6 +15,7 @@ import type {
 } from "@/types/conversion";
 
 export function MainWorkspace() {
+  const { showToast } = useToast();
   const [mjml, setMjml] = useState(DEFAULT_MJML);
   const [html, setHtml] = useState("");
   const [errors, setErrors] = useState<ConvertResponse["errors"]>([]);
@@ -28,6 +30,7 @@ export function MainWorkspace() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
+  const [mobilePane, setMobilePane] = useState<"editor" | "preview">("editor");
 
   useEffect(() => {
     const storedMjml = window.sessionStorage.getItem(STORAGE_KEYS.mjml);
@@ -94,13 +97,17 @@ export function MainWorkspace() {
       setHtml(data.html);
       setErrors(data.errors);
       setWarnings(data.warnings);
+      if (data.errors.length === 0) {
+        showToast("Preview updated.", "success");
+      }
     } catch (error) {
       setHtml("");
       setErrors([]);
       setWarnings([]);
-      setRequestError(
-        error instanceof Error ? error.message : "Failed to convert MJML",
-      );
+      const message =
+        error instanceof Error ? error.message : "Failed to convert MJML";
+      setRequestError(message);
+      showToast(message, "error");
     } finally {
       setIsRefreshing(false);
     }
@@ -108,26 +115,56 @@ export function MainWorkspace() {
 
   return (
     <section>
+      <div className="mb-4 flex lg:hidden">
+        <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 text-sm font-medium text-slate-500 shadow-sm">
+          <button
+            type="button"
+            onClick={() => setMobilePane("editor")}
+            className={`rounded-full px-4 py-2 transition ${
+              mobilePane === "editor"
+                ? "bg-slate-950 text-white"
+                : "hover:text-slate-800"
+            }`}
+          >
+            Editor
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobilePane("preview")}
+            className={`rounded-full px-4 py-2 transition ${
+              mobilePane === "preview"
+                ? "bg-slate-950 text-white"
+                : "hover:text-slate-800"
+            }`}
+          >
+            Preview
+          </button>
+        </div>
+      </div>
       <div className="grid gap-4 xl:grid-cols-2">
-        <EditorPanel
-          mjml={mjml}
-          onMjmlChange={setMjml}
-          errors={errors}
-          warnings={warnings}
-          requestError={requestError}
-          isRefreshing={isRefreshing}
-        />
-        <PreviewPanel
-          html={html}
-          previewWidth={previewWidth}
-          deviceMode={deviceMode}
-          onDeviceModeChange={setDeviceMode}
-          previewTheme={previewTheme}
-          onPreviewThemeChange={setPreviewTheme}
-          onRefresh={refreshPreview}
-          isRefreshing={isRefreshing}
-          requestError={requestError}
-        />
+        <div className={mobilePane === "preview" ? "hidden lg:block" : ""}>
+          <EditorPanel
+            mjml={mjml}
+            onMjmlChange={setMjml}
+            errors={errors}
+            warnings={warnings}
+            requestError={requestError}
+            isRefreshing={isRefreshing}
+          />
+        </div>
+        <div className={mobilePane === "editor" ? "hidden lg:block" : ""}>
+          <PreviewPanel
+            html={html}
+            previewWidth={previewWidth}
+            deviceMode={deviceMode}
+            onDeviceModeChange={setDeviceMode}
+            previewTheme={previewTheme}
+            onPreviewThemeChange={setPreviewTheme}
+            onRefresh={refreshPreview}
+            isRefreshing={isRefreshing}
+            requestError={requestError}
+          />
+        </div>
       </div>
     </section>
   );

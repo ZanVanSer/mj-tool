@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 
+import { useToast } from "@/components/toast-provider";
 import { DEFAULT_SETTINGS, normalizeSettings } from "@/lib/settings";
 import { STORAGE_KEYS } from "@/lib/storage";
 import type { AnalyzerSettings } from "@/types/analyzer";
 
 export function SettingsWorkspace() {
+  const { showToast } = useToast();
   const [settings, setSettings] = useState<AnalyzerSettings>(() => {
     if (typeof window === "undefined") {
       return DEFAULT_SETTINGS;
@@ -41,6 +43,7 @@ export function SettingsWorkspace() {
   function handleSave() {
     window.localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(settings));
     setSaved(true);
+    showToast("Settings saved.", "success");
   }
 
   return (

@@ -7,11 +7,13 @@ import { CodeViewer } from "@/components/output/code-viewer";
 import { EmptyOutputState } from "@/components/output/empty-output-state";
 import { OutputActions } from "@/components/output/output-actions";
 import { OutputTabs } from "@/components/output/output-tabs";
+import { useToast } from "@/components/toast-provider";
 import { STORAGE_KEYS } from "@/lib/storage";
 
 type OutputTab = "generated" | "minified";
 
 export function OutputWorkspace() {
+  const { showToast } = useToast();
   const [html, setHtml] = useState("");
   const [minifiedHtml, setMinifiedHtml] = useState("");
   const [activeTab, setActiveTab] = useState<OutputTab>("generated");
@@ -43,10 +45,11 @@ export function OutputWorkspace() {
     try {
       await navigator.clipboard.writeText(currentHtml);
       setCopied(true);
+      showToast("HTML copied to clipboard.", "success");
     } catch (error) {
-      setActionError(
-        error instanceof Error ? error.message : "Failed to copy HTML",
-      );
+      const message = error instanceof Error ? error.message : "Failed to copy HTML";
+      setActionError(message);
+      showToast(message, "error");
     }
   }
 
@@ -75,10 +78,12 @@ export function OutputWorkspace() {
 
       setMinifiedHtml(data.html);
       setActiveTab("minified");
+      showToast("Minified HTML generated.", "success");
     } catch (error) {
-      setActionError(
-        error instanceof Error ? error.message : "Failed to minify HTML",
-      );
+      const message =
+        error instanceof Error ? error.message : "Failed to minify HTML";
+      setActionError(message);
+      showToast(message, "error");
     } finally {
       setIsMinifying(false);
     }
@@ -101,10 +106,12 @@ export function OutputWorkspace() {
       link.click();
 
       URL.revokeObjectURL(url);
+      showToast("HTML download started.", "success");
     } catch (error) {
-      setActionError(
-        error instanceof Error ? error.message : "Failed to download HTML",
-      );
+      const message =
+        error instanceof Error ? error.message : "Failed to download HTML";
+      setActionError(message);
+      showToast(message, "error");
     }
   }
 
@@ -121,10 +128,12 @@ export function OutputWorkspace() {
       window.open(url, "_blank", "noopener,noreferrer");
 
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast("Opened HTML in a new tab.", "success");
     } catch (error) {
-      setActionError(
-        error instanceof Error ? error.message : "Failed to open HTML in new tab",
-      );
+      const message =
+        error instanceof Error ? error.message : "Failed to open HTML in new tab";
+      setActionError(message);
+      showToast(message, "error");
     }
   }
 

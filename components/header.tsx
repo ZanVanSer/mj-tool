@@ -20,7 +20,7 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/78 backdrop-blur-xl">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <Link href="/" className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb,#4f46e5)] text-white shadow-[0_14px_30px_rgba(37,99,235,0.32)]">
             <MailIcon />
@@ -32,7 +32,7 @@ export function AppHeader() {
           </div>
         </Link>
 
-        <nav className="flex flex-wrap items-center justify-end gap-2">
+        <nav className="flex flex-wrap items-center justify-start gap-2 lg:justify-end">
           {NAV_ITEMS.map((item) => {
             const isActive =
               pathname === item.href || pathname.startsWith(`${item.href}/`);

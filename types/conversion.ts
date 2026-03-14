@@ -3,6 +3,7 @@ export type MjmlIssue = {
   line?: number;
   message: string;
   type: "error" | "warning";
+  snippet?: string;
 };
 
 export type ConvertResponse = {

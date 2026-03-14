@@ -25,10 +25,11 @@ export function PreviewPanel({
 }: PreviewPanelProps) {
   const frameWidth = deviceMode === "desktop" ? `${previewWidth}px` : "375px";
   const hasHtml = html.trim().length > 0;
+  const previewHtml = hasHtml ? applyPreviewTheme(html, previewTheme) : "";
 
   return (
-    <div className="rounded-[30px] border border-slate-200/80 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.08)] xl:h-[calc(100vh-14.5rem)] xl:min-h-[680px]">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <div className="rounded-[30px] border border-slate-200/80 bg-white p-3 shadow-[0_18px_60px_rgba(15,23,42,0.08)] xl:h-[calc(100vh-11.5rem)] xl:min-h-[760px]">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
         <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 p-1 text-sm font-medium text-slate-500">
           <button
             type="button"
@@ -98,48 +99,70 @@ export function PreviewPanel({
       ) : null}
 
       <div
-        className={`rounded-[24px] border border-slate-200 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] xl:flex xl:h-[calc(100%-6rem)] xl:min-h-0 xl:flex-col ${
+        className={`rounded-[24px] border border-slate-200 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] xl:flex xl:h-[calc(100%-4.8rem)] xl:min-h-0 xl:flex-col ${
           previewTheme === "light"
             ? "bg-[linear-gradient(180deg,#f8fbff,#f3f6fb)]"
             : "bg-[linear-gradient(180deg,#0f172a,#111827)]"
         }`}
       >
         <div
-          className={`rounded-[28px] border px-3 py-4 shadow-[0_20px_50px_rgba(148,163,184,0.18)] transition xl:flex xl:min-h-0 xl:flex-1 xl:flex-col ${
-            previewTheme === "light"
-              ? "border-slate-200 bg-white"
-              : "border-slate-700 bg-slate-900"
-          }`}
+          className="mx-auto w-full overflow-hidden rounded-[24px] bg-white transition-[width] duration-200 xl:flex xl:min-h-0 xl:flex-1 xl:flex-col"
+          style={{ width: frameWidth, maxWidth: "100%" }}
         >
-          <div
-            className="mx-auto overflow-hidden rounded-[20px] border border-slate-200 bg-white transition-[width] duration-200 xl:flex xl:min-h-0 xl:flex-1 xl:flex-col"
-            style={{ width: frameWidth, maxWidth: "100%" }}
-          >
-            {hasHtml ? (
-              <iframe
-                title="MJML preview"
-                srcDoc={html}
-                className="min-h-[620px] w-full bg-white xl:min-h-0 xl:flex-1"
-              />
-            ) : (
-              <div className="flex min-h-[620px] items-center justify-center px-8 text-center xl:min-h-0 xl:flex-1">
-                <div className="max-w-md space-y-4">
-                  <p className="text-sm font-semibold uppercase tracking-[0.26em] text-sky-500">
-                    Preview Ready
-                  </p>
-                  <h2 className="text-3xl font-semibold tracking-tight text-slate-900">
-                    Refresh to compile your MJML.
-                  </h2>
-                  <p className="text-sm leading-7 text-slate-500">
-                    The preview updates only when you ask for it, so you can edit
-                    freely without constant API requests.
-                  </p>
-                </div>
+          {hasHtml ? (
+            <iframe
+              title="MJML preview"
+              srcDoc={previewHtml}
+              className={`min-h-[620px] w-full xl:min-h-0 xl:flex-1 ${
+                previewTheme === "dark" ? "bg-slate-950" : "bg-white"
+              }`}
+            />
+          ) : (
+            <div className="flex min-h-[620px] items-center justify-center px-8 text-center xl:min-h-0 xl:flex-1">
+              <div className="max-w-md space-y-4">
+                <p className="text-sm font-semibold uppercase tracking-[0.26em] text-sky-500">
+                  Preview Ready
+                </p>
+                <h2 className="text-3xl font-semibold tracking-tight text-slate-900">
+                  Refresh to compile your MJML.
+                </h2>
+                <p className="text-sm leading-7 text-slate-500">
+                  The preview updates only when you ask for it, so you can edit
+                  freely without constant API requests.
+                </p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
+}
+
+function applyPreviewTheme(html: string, theme: PreviewTheme) {
+  if (theme === "light") {
+    return html;
+  }
+
+  const darkModeStyles = `
+    <style id="mj-tool-dark-preview">
+      html {
+        background: #020817 !important;
+      }
+      body {
+        background: #020817 !important;
+        filter: invert(1) hue-rotate(180deg);
+        transform-origin: top left;
+      }
+      img, picture, video, svg {
+        filter: invert(1) hue-rotate(180deg) !important;
+      }
+    </style>
+  `;
+
+  if (html.includes("</head>")) {
+    return html.replace("</head>", `${darkModeStyles}</head>`);
+  }
+
+  return `${darkModeStyles}${html}`;
 }
