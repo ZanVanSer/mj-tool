@@ -1,14 +1,8 @@
-import { PageIntro } from "@/components/page-intro";
 import { PlaceholderCard } from "@/components/placeholder-card";
 
 export default function SettingsPage() {
   return (
-    <section className="space-y-8">
-      <PageIntro
-        title="Settings"
-        description="Configure your email development environment and analyzer thresholds from one focused control panel."
-      />
-
+    <section className="space-y-6">
       <div className="grid gap-6 xl:grid-cols-2">
         <PlaceholderCard
           title="Preview Settings"

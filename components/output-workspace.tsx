@@ -7,7 +7,6 @@ import { CodeViewer } from "@/components/output/code-viewer";
 import { EmptyOutputState } from "@/components/output/empty-output-state";
 import { OutputActions } from "@/components/output/output-actions";
 import { OutputTabs } from "@/components/output/output-tabs";
-import { PageIntro } from "@/components/page-intro";
 import { STORAGE_KEYS } from "@/lib/storage";
 
 type OutputTab = "generated" | "minified";
@@ -139,12 +138,7 @@ export function OutputWorkspace() {
   }
 
   return (
-    <section className="space-y-6">
-      <PageIntro
-        title="HTML Output"
-        description="Review and export your generated email code with fast actions for copying, downloading, minifying, and opening the raw result."
-      />
-
+    <section className="space-y-4">
       <div className="rounded-[30px] border border-slate-200/80 bg-white/90 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur">
         <div className="flex flex-col gap-5">
           <OutputTabs
