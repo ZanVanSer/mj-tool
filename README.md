@@ -18,11 +18,8 @@ MJ Tool is a local web app for building and reviewing MJML email templates. It g
 
 ## Screenshots
 
-Add 1 to 3 screenshots here once you have them ready:
-
-```md
 ![MJ Tool screenshot](./public/screenshots/mjtool.png)
-```
+
 
 ## Tech Stack
 
