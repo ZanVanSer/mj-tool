@@ -1,25 +1,41 @@
 # MJ Tool
 
-MJ Tool is a personal web app for MJML email development. It lets you paste MJML, convert it to HTML, preview the result, inspect the generated markup, run rule-based quality checks, and tune analyzer behavior through saved settings.
+MJ Tool is a local web app for building and reviewing MJML email templates. It gives you a place to edit MJML, convert it to HTML, preview the result, inspect the generated markup, run rule-based analysis.
 
-## Features
+![Next.js](https://img.shields.io/badge/Next.js-111827?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![MJML](https://img.shields.io/badge/MJML-0F172A?style=for-the-badge)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 
-- MJML editor with manual preview refresh
-- Server-side MJML to HTML conversion
-- HTML output view with copy, download, minify, and open-in-new-tab actions
-- Rule-based analyzer for deliverability, structure, accessibility, compatibility, and link checks
-- Saved local settings for preview defaults and analyzer thresholds
+## What It Does
+
+- Edit MJML with a code editor and refresh the preview on demand
+- Convert MJML to HTML
+- Inspect, copy, download, minify, and open generated HTML in a new tab
+- Preview raw HTML separately from the MJML workflow
+- Run analysis against generated or pasted HTML through
+- Save preview defaults and analyzer preferences in local storage
+
+## Screenshots
+
+Add 1 to 3 screenshots here once you have them ready:
+
+```md
+![MJ Tool screenshot](./public/screenshots/mjtool.png)
+```
 
 ## Tech Stack
 
 - Next.js App Router
+- React 19
 - TypeScript
 - Tailwind CSS
 - MJML
 - html-minifier-terser
 - Cheerio
+- CodeMirror
 
-## Run Locally
+## Getting Started
 
 1. Install dependencies:
 
@@ -33,51 +49,11 @@ npm install
 npm run dev
 ```
 
-3. Open the app in your browser:
+3. Open the app:
 
 ```text
 http://localhost:3000
 ```
 
-Note:
-- The project intentionally uses webpack for `dev` and `build` because MJML is more stable there than in Turbopack for this app.
+The project intentionally uses webpack for `dev` and `build` because MJML is more stable there than in Turbopack for this app.
 
-## Build
-
-To create a production build:
-
-```bash
-npm run build
-```
-
-To start the production server locally after building:
-
-```bash
-npm run start
-```
-
-## Deployment
-
-This app is designed to deploy cleanly on Vercel.
-
-Typical flow:
-
-1. Push your branch to GitHub
-2. Import the repository into Vercel
-3. Use the default Next.js project settings
-4. Deploy
-
-No environment variables are required for the current version.
-
-## Storage Keys
-
-- `edt_mjml` in `sessionStorage`
-- `edt_html` in `sessionStorage`
-- `edt_analysis` in `sessionStorage`
-- `edt_settings` in `localStorage`
-
-## Project Notes
-
-- `docs/` and `design/` are ignored from git for local planning/design reference
-- Analyzer checks are implemented in `lib/analyzer.ts`
-- Settings defaults are defined in `lib/settings.ts`
