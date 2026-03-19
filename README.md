@@ -1,36 +1,45 @@
 # MJ Tool
 
-MJ Tool is a local web app for building and reviewing MJML email templates. It gives you a place to edit MJML, convert it to HTML, preview the result, inspect the generated markup, run rule-based analysis.
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![React](https://img.shields.io/badge/React-19-20232a?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)
+![MJML](https://img.shields.io/badge/MJML-Email%20Templates-0f172a)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-![Next.js](https://img.shields.io/badge/Next.js-111827?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![MJML](https://img.shields.io/badge/MJML-0F172A?style=for-the-badge)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+`MJ Tool` is a local web app for building and reviewing MJML email templates in one place. Write MJML, convert it to HTML, preview the output, inspect generated markup, and run rule-based checks without bouncing between separate tools.
 
-## What It Does
-
-- Edit MJML with a code editor and refresh the preview on demand
-- Convert MJML to HTML
-- Inspect, copy, download, minify, and open generated HTML in a new tab
-- Preview raw HTML separately from the MJML workflow
-- Run analysis against generated or pasted HTML through
-- Save preview defaults and analyzer preferences in local storage
-
-## Screenshots
+## Screenshot
 
 ![MJ Tool screenshot](./public/screenshots/mjtool.png)
 
+## Features
 
-## Tech Stack
+- Edit MJML in a dedicated code editor
+- Convert MJML templates into production-ready HTML
+- Preview rendered output and inspect generated markup
+- Analyze generated or pasted HTML with built-in checks
+- Save preview defaults and analyzer preferences locally
 
-- Next.js App Router
-- React 19
+## Stack
+
+- Next.js
+- React
 - TypeScript
-- Tailwind CSS
 - MJML
-- html-minifier-terser
+- Tailwind CSS
 - Cheerio
+- html-minifier-terser
 - CodeMirror
+
+## Commands
+
+```bash
+npm install
+npm run dev
+npm run build
+npm start
+npm run lint
+```
 
 ## Getting Started
 
@@ -46,11 +55,12 @@ npm install
 npm run dev
 ```
 
-3. Open the app:
+3. Open the app in your browser:
 
 ```text
 http://localhost:3000
 ```
 
-The project intentionally uses webpack for `dev` and `build` because MJML is more stable there than in Turbopack for this app.
+## License
 
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
