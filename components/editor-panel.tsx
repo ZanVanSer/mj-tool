@@ -25,17 +25,20 @@ export function EditorPanel({
   requestError,
   isRefreshing,
 }: EditorPanelProps) {
+  const hasIssues = Boolean(requestError) || errors.length > 0 || warnings.length > 0;
+
   return (
-    <div className="rounded-[30px] border border-white/50 bg-[linear-gradient(180deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92))] p-4 shadow-[0_24px_80px_rgba(15,23,42,0.18)] xl:h-[calc(100vh-14.5rem)] xl:min-h-[680px]">
-      <div className="mb-3 flex items-center justify-between text-xs uppercase tracking-[0.28em] text-slate-400">
-        <span className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-          {title}
-        </span>
-        <span>{isRefreshing ? "refreshing..." : languageLabel}</span>
+    <div className="overflow-hidden border border-[var(--color-border)] bg-slate-950 xl:h-[calc(100vh-11rem)] xl:min-h-[760px]">
+      <div className="flex items-center justify-between border-b border-slate-800 px-5 py-3.5">
+        <div>
+          <h2 className="text-[15px] font-semibold text-white">{title}</h2>
+          <p className="mt-0.5 text-xs text-slate-400">
+            {isRefreshing ? "Refreshing preview" : languageLabel}
+          </p>
+        </div>
       </div>
 
-      <div className="min-h-[560px] overflow-hidden rounded-[24px] border border-white/6 bg-[#091122] xl:h-[calc(100%-7.5rem)] xl:min-h-0">
+      <div className="relative min-h-[620px] overflow-hidden xl:h-[calc(100%-3.75rem)] xl:min-h-0">
         <CodeMirror
           value={code}
           height="100%"
@@ -52,23 +55,26 @@ export function EditorPanel({
           onChange={(value) => onCodeChange(value)}
           className="h-full text-sm"
         />
-      </div>
+        {hasIssues ? (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-5 py-5">
+            <div className="pointer-events-auto max-h-[70%] w-full max-w-xl space-y-2 overflow-auto">
+              {requestError ? (
+                <IssueBox
+                  tone="error"
+                  title="Conversion failed"
+                  items={[{ id: "request-error", message: requestError, type: "error" }]}
+                />
+              ) : null}
 
-      <div className="mt-5 space-y-3">
-        {requestError ? (
-          <IssueBox
-            tone="error"
-            title="Conversion failed"
-            items={[{ id: "request-error", message: requestError, type: "error" }]}
-          />
-        ) : null}
+              {errors.length > 0 ? (
+                <IssueBox tone="error" title="MJML errors" items={errors} />
+              ) : null}
 
-        {errors.length > 0 ? (
-          <IssueBox tone="error" title="MJML errors" items={errors} />
-        ) : null}
-
-        {warnings.length > 0 ? (
-          <IssueBox tone="warning" title="MJML warnings" items={warnings} />
+              {warnings.length > 0 ? (
+                <IssueBox tone="warning" title="MJML warnings" items={warnings} />
+              ) : null}
+            </div>
+          </div>
         ) : null}
       </div>
     </div>
@@ -84,21 +90,21 @@ type IssueBoxProps = {
 function IssueBox({ title, items, tone }: IssueBoxProps) {
   return (
     <div
-      className={`rounded-2xl border px-4 py-3 ${
+      className={`rounded-[6px] border px-4 py-3 ${
         tone === "error"
-          ? "border-rose-400/25 bg-rose-500/10"
-          : "border-amber-400/25 bg-amber-400/10"
+          ? "border-rose-800/80 bg-slate-950/90"
+          : "border-amber-700/80 bg-slate-950/90"
       }`}
     >
       <div className="mb-2 flex items-center gap-2">
         <span
-          className={`h-2.5 w-2.5 rounded-full ${
+          className={`h-2 w-2 ${
             tone === "error" ? "bg-rose-400" : "bg-amber-300"
           }`}
         />
         <p
           className={`text-sm font-semibold ${
-            tone === "error" ? "text-rose-200" : "text-amber-100"
+            tone === "error" ? "text-rose-200" : "text-amber-200"
           }`}
         >
           {title}
@@ -109,14 +115,14 @@ function IssueBox({ title, items, tone }: IssueBoxProps) {
           <div key={item.id} className="space-y-1">
             <p
               className={`text-sm leading-6 ${
-                tone === "error" ? "text-rose-100/90" : "text-amber-50/90"
+                tone === "error" ? "text-rose-100/90" : "text-amber-100/90"
               }`}
             >
               {item.line ? `Line ${item.line}: ` : ""}
               {item.message}
             </p>
             {item.snippet ? (
-              <pre className="overflow-x-auto rounded-xl bg-slate-950/70 px-3 py-2 font-mono text-xs leading-6 text-slate-200">
+              <pre className="overflow-x-auto rounded-[4px] border border-slate-800 bg-slate-950 px-3 py-2 font-mono text-xs leading-6 text-slate-200">
                 <code>{item.snippet}</code>
               </pre>
             ) : null}

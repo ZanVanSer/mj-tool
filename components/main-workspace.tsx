@@ -115,15 +115,15 @@ export function MainWorkspace() {
 
   return (
     <section>
-      <div className="mb-4 flex lg:hidden">
-        <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 text-sm font-medium text-slate-500 shadow-sm">
+      <div className="mb-5 flex lg:hidden">
+        <div className="inline-flex overflow-hidden rounded-[6px] border border-[var(--color-border)] bg-white text-sm text-slate-600">
           <button
             type="button"
             onClick={() => setMobilePane("editor")}
-            className={`rounded-full px-4 py-2 transition ${
+            className={`px-4 py-2.5 transition-colors ${
               mobilePane === "editor"
-                ? "bg-slate-950 text-white"
-                : "hover:text-slate-800"
+                ? "bg-slate-900 text-white"
+                : "hover:bg-slate-50 hover:text-slate-900"
             }`}
           >
             Editor
@@ -131,17 +131,17 @@ export function MainWorkspace() {
           <button
             type="button"
             onClick={() => setMobilePane("preview")}
-            className={`rounded-full px-4 py-2 transition ${
+            className={`border-l border-[var(--color-border)] px-4 py-2.5 transition-colors ${
               mobilePane === "preview"
-                ? "bg-slate-950 text-white"
-                : "hover:text-slate-800"
+                ? "bg-slate-900 text-white"
+                : "hover:bg-slate-50 hover:text-slate-900"
             }`}
           >
             Preview
           </button>
         </div>
       </div>
-      <div className="grid gap-4 xl:grid-cols-2">
+      <div className="grid gap-8 xl:grid-cols-2">
         <div className={mobilePane === "preview" ? "hidden lg:block" : ""}>
           <EditorPanel
             code={mjml}

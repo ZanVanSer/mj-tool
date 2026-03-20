@@ -47,207 +47,240 @@ export function SettingsWorkspace() {
   }
 
   return (
-    <section>
-      <div className="rounded-[30px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur">
-        <div className="grid gap-8">
-          <SettingsSection
-            title="Preview Settings"
-            description="Control the default preview size, device, and theme for the editor workspace."
-          >
-            <div className="grid gap-5 md:grid-cols-3">
-              <Field label="Default preview width (px)" hint="Initial width for the desktop preview frame.">
-                <input
-                  type="number"
-                  min={320}
-                  value={settings.previewWidth}
-                  onChange={(event) =>
-                    updateSetting("previewWidth", Number(event.target.value) || DEFAULT_SETTINGS.previewWidth)
-                  }
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-300"
-                />
-              </Field>
+    <section className="space-y-6">
+      <div className="max-w-2xl">
+        <h1 className="text-[28px] font-semibold tracking-[-0.02em] text-slate-950">
+          Settings
+        </h1>
+        <p className="mt-2 text-[15px] leading-6 text-slate-500">
+          Preview defaults and analyzer options for this workspace.
+        </p>
+      </div>
 
-              <Field label="Default preview device">
-                <select
-                  value={settings.previewDevice}
-                  onChange={(event) =>
-                    updateSetting(
-                      "previewDevice",
-                      event.target.value as AnalyzerSettings["previewDevice"],
-                    )
-                  }
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-300"
-                >
-                  <option value="desktop">Desktop</option>
-                  <option value="mobile">Mobile</option>
-                </select>
-              </Field>
-
-              <Field label="Default preview theme">
-                <select
-                  value={settings.previewTheme}
-                  onChange={(event) =>
-                    updateSetting(
-                      "previewTheme",
-                      event.target.value as AnalyzerSettings["previewTheme"],
-                    )
-                  }
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-300"
-                >
-                  <option value="light">Light</option>
-                  <option value="dark">Dark</option>
-                </select>
-              </Field>
-            </div>
-          </SettingsSection>
-
-          <SettingsSection
-            title="Analyzer Thresholds"
-            description="Set the limits and sensitivity used by the rule-based analyzer."
-          >
-            <div className="grid gap-5 md:grid-cols-2">
-              <Field label="HTML size warning (KB)" hint="Gmail commonly clips emails over 102 KB.">
-                <input
-                  type="number"
-                  min={1}
-                  value={settings.htmlSizeWarningKb}
-                  onChange={(event) =>
-                    updateSetting(
-                      "htmlSizeWarningKb",
-                      Number(event.target.value) || DEFAULT_SETTINGS.htmlSizeWarningKb,
-                    )
-                  }
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-300"
-                />
-              </Field>
-
-              <Field label="Image weight warning (MB)" hint="Reserved for future weight-based media checks.">
-                <input
-                  type="number"
-                  min={0.1}
-                  step={0.1}
-                  value={settings.imageWeightWarningMb}
-                  onChange={(event) =>
-                    updateSetting(
-                      "imageWeightWarningMb",
-                      Number(event.target.value) || DEFAULT_SETTINGS.imageWeightWarningMb,
-                    )
-                  }
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-300"
-                />
-              </Field>
-            </div>
-          </SettingsSection>
-
-          <SettingsSection
-            title="Spam Detection"
-            description="Choose how aggressively the analyzer should flag risky promotional language."
-          >
-            <Field label="Sensitivity level" hint="Higher sensitivity catches more risky phrases, but can increase false positives.">
-              <select
-                value={settings.spamSensitivity}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="space-y-6">
+          <SettingsPanel title="Preview">
+            <SettingsRow
+              label="Desktop width"
+              description="Starting width for the desktop preview frame."
+            >
+              <input
+                type="number"
+                min={320}
+                value={settings.previewWidth}
                 onChange={(event) =>
                   updateSetting(
-                    "spamSensitivity",
-                    event.target.value as AnalyzerSettings["spamSensitivity"],
+                    "previewWidth",
+                    Number(event.target.value) || DEFAULT_SETTINGS.previewWidth,
                   )
                 }
-                className="w-full max-w-md rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-300"
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium - Balanced detection</option>
-                <option value="high">High</option>
-              </select>
-            </Field>
-          </SettingsSection>
+                className="w-full border border-[var(--color-border)] bg-white px-4 py-3 text-[14px] text-slate-900 outline-none transition-colors focus:border-[var(--color-brand)]"
+              />
+            </SettingsRow>
 
-          <SettingsSection
-            title="Link Checking"
-            description="Control whether the analyzer verifies external URLs during analysis."
-          >
-            <button
-              type="button"
-              onClick={() => updateSetting("linkCheckEnabled", !settings.linkCheckEnabled)}
-              className="flex w-full items-center justify-between rounded-[24px] border border-slate-200 bg-slate-50/80 px-4 py-4 text-left"
+            <SettingsRow
+              label="Default device"
+              description="Which preview mode opens first."
             >
-              <div>
-                <p className="text-sm font-semibold text-slate-900">
-                  Enable broken link checking
-                </p>
-                <p className="mt-1 text-sm text-slate-500">
-                  Automatically verify external URLs with timeout protection.
-                </p>
+              <select
+                value={settings.previewDevice}
+                onChange={(event) =>
+                  updateSetting(
+                    "previewDevice",
+                    event.target.value as AnalyzerSettings["previewDevice"],
+                  )
+                }
+                className="w-full border border-[var(--color-border)] bg-white px-4 py-3 text-[14px] text-slate-900 outline-none transition-colors focus:border-[var(--color-brand)]"
+              >
+                <option value="desktop">Desktop</option>
+                <option value="mobile">Mobile</option>
+              </select>
+            </SettingsRow>
+
+            <SettingsRow
+              label="Default theme"
+              description="Preview appearance when the page loads."
+            >
+              <select
+                value={settings.previewTheme}
+                onChange={(event) =>
+                  updateSetting(
+                    "previewTheme",
+                    event.target.value as AnalyzerSettings["previewTheme"],
+                  )
+                }
+                className="w-full border border-[var(--color-border)] bg-white px-4 py-3 text-[14px] text-slate-900 outline-none transition-colors focus:border-[var(--color-brand)]"
+              >
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </SettingsRow>
+          </SettingsPanel>
+
+          <SettingsPanel title="Analyzer">
+            <SettingsRow
+              label="HTML size warning"
+              description="Warn when generated HTML gets close to clipping limits."
+            >
+              <div className="max-w-[220px]">
+                <InputWithSuffix suffix="KB">
+                  <input
+                    type="number"
+                    min={1}
+                    value={settings.htmlSizeWarningKb}
+                    onChange={(event) =>
+                      updateSetting(
+                        "htmlSizeWarningKb",
+                        Number(event.target.value) || DEFAULT_SETTINGS.htmlSizeWarningKb,
+                      )
+                    }
+                    className="w-full border-0 bg-transparent px-4 py-3 text-[14px] text-slate-900 outline-none"
+                  />
+                </InputWithSuffix>
               </div>
-              <span
-                className={`relative inline-flex h-7 w-12 rounded-full transition ${
-                  settings.linkCheckEnabled ? "bg-sky-600" : "bg-slate-300"
-                }`}
+            </SettingsRow>
+
+            <SettingsRow
+              label="Image weight warning"
+              description="Reserved for future media weight checks."
+            >
+              <div className="max-w-[220px]">
+                <InputWithSuffix suffix="MB">
+                  <input
+                    type="number"
+                    min={0.1}
+                    step={0.1}
+                    value={settings.imageWeightWarningMb}
+                    onChange={(event) =>
+                      updateSetting(
+                        "imageWeightWarningMb",
+                        Number(event.target.value) || DEFAULT_SETTINGS.imageWeightWarningMb,
+                      )
+                    }
+                    className="w-full border-0 bg-transparent px-4 py-3 text-[14px] text-slate-900 outline-none"
+                  />
+                </InputWithSuffix>
+              </div>
+            </SettingsRow>
+
+            <SettingsRow
+              label="Spam sensitivity"
+              description="Higher values catch more risky copy but may increase false positives."
+            >
+              <div className="max-w-[280px]">
+                <select
+                  value={settings.spamSensitivity}
+                  onChange={(event) =>
+                    updateSetting(
+                      "spamSensitivity",
+                      event.target.value as AnalyzerSettings["spamSensitivity"],
+                    )
+                  }
+                  className="w-full border border-[var(--color-border)] bg-white px-4 py-3 text-[14px] text-slate-900 outline-none transition-colors focus:border-[var(--color-brand)]"
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+            </SettingsRow>
+
+            <SettingsRow
+              label="Link checking"
+              description="Verify external URLs during analysis."
+            >
+              <button
+                type="button"
+                onClick={() => updateSetting("linkCheckEnabled", !settings.linkCheckEnabled)}
+                className="inline-flex items-center gap-3 border border-[var(--color-border)] bg-white px-4 py-3 text-[14px] text-slate-700 transition-colors hover:bg-slate-50"
               >
                 <span
-                  className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${
-                    settings.linkCheckEnabled ? "left-6" : "left-1"
+                  className={`h-2.5 w-2.5 ${
+                    settings.linkCheckEnabled ? "bg-[var(--color-brand)]" : "bg-slate-300"
                   }`}
                 />
-              </span>
-            </button>
-          </SettingsSection>
+                {settings.linkCheckEnabled ? "Enabled" : "Disabled"}
+              </button>
+            </SettingsRow>
+          </SettingsPanel>
+        </div>
 
-          <div className="flex items-center justify-end gap-3">
+        <aside className="h-fit border border-[var(--color-border)] bg-white">
+          <div className="border-b border-slate-200 px-5 py-4">
+            <h2 className="text-[18px] font-semibold text-slate-950">Actions</h2>
+          </div>
+
+          <div className="space-y-4 px-5 py-5">
+            <p className="text-[14px] leading-6 text-slate-500">
+              Changes stay local to this browser and affect preview and analysis defaults.
+            </p>
+
             {saved ? (
-              <span className="text-sm font-medium text-emerald-600">
-                Settings saved!
-              </span>
+              <div className="border border-emerald-200 bg-emerald-50 px-4 py-3 text-[14px] text-emerald-700">
+                Settings saved.
+              </div>
             ) : null}
+
             <button
               type="button"
               onClick={handleSave}
-              className="inline-flex items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb,#4f46e5)] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_24px_rgba(37,99,235,0.22)] transition hover:brightness-105"
+              className="inline-flex w-full items-center justify-center border border-slate-900 bg-slate-900 px-5 py-3 text-[14px] font-medium text-white transition-colors hover:bg-slate-800"
             >
               Save Settings
             </button>
           </div>
-        </div>
+        </aside>
       </div>
     </section>
   );
 }
 
-type SettingsSectionProps = {
+type SettingsPanelProps = {
   title: string;
+  children: React.ReactNode;
+};
+
+function SettingsPanel({ title, children }: SettingsPanelProps) {
+  return (
+    <section className="border border-[var(--color-border)] bg-white">
+      <div className="border-b border-slate-200 px-5 py-4">
+        <h2 className="text-[18px] font-semibold text-slate-950">{title}</h2>
+      </div>
+      <div>{children}</div>
+    </section>
+  );
+}
+
+type SettingsRowProps = {
+  label: string;
   description: string;
   children: React.ReactNode;
 };
 
-function SettingsSection({
-  title,
-  description,
-  children,
-}: SettingsSectionProps) {
+function SettingsRow({ label, description, children }: SettingsRowProps) {
   return (
-    <section className="space-y-4 border-b border-slate-100 pb-8 last:border-b-0 last:pb-0">
-      <div>
-        <h2 className="text-xl font-semibold tracking-tight text-slate-950">
-          {title}
-        </h2>
-        <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
+    <div className="grid gap-4 border-t border-slate-200 px-5 py-5 first:border-t-0 lg:grid-cols-[minmax(0,240px)_minmax(0,1fr)] lg:items-start lg:gap-6">
+      <div className="space-y-1">
+        <p className="text-[14px] font-medium text-slate-900">{label}</p>
+        <p className="text-[13px] leading-5 text-slate-500">{description}</p>
       </div>
-      {children}
-    </section>
+      <div>{children}</div>
+    </div>
   );
 }
 
-type FieldProps = {
-  label: string;
-  hint?: string;
+type InputWithSuffixProps = {
   children: React.ReactNode;
+  suffix: string;
 };
 
-function Field({ label, hint, children }: FieldProps) {
+function InputWithSuffix({ children, suffix }: InputWithSuffixProps) {
   return (
-    <label className="block space-y-2">
-      <span className="text-sm font-medium text-slate-700">{label}</span>
-      {children}
-      {hint ? <p className="text-xs leading-5 text-slate-400">{hint}</p> : null}
-    </label>
+    <div className="flex items-center border border-[var(--color-border)] bg-white">
+      <div className="min-w-0 flex-1">{children}</div>
+      <span className="border-l border-slate-200 px-3 text-[13px] text-slate-500">
+        {suffix}
+      </span>
+    </div>
   );
 }

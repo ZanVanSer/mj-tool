@@ -147,9 +147,9 @@ export function OutputWorkspace() {
   }
 
   return (
-    <section className="space-y-4">
-      <div className="rounded-[30px] border border-slate-200/80 bg-white/90 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur">
-        <div className="flex flex-col gap-5">
+    <section className="space-y-5">
+      <div className="border border-[var(--color-border)] bg-white p-6">
+        <div className="flex flex-col gap-6">
           <OutputTabs
             activeTab={activeTab}
             onTabChange={setActiveTab}
@@ -166,7 +166,7 @@ export function OutputWorkspace() {
           />
 
           {actionError ? (
-            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            <div className="rounded-[6px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
               {actionError}
             </div>
           ) : null}
@@ -186,9 +186,9 @@ export function OutputWorkspace() {
         </div>
       </div>
 
-      <div className="text-sm text-slate-500">
+      <div className="text-[15px] leading-6 text-slate-500">
         Need a fresh conversion first? Return to the{" "}
-        <Link href="/" className="font-medium text-sky-700 hover:text-sky-800">
+        <Link href="/" className="font-medium text-[var(--color-brand)] hover:text-[var(--color-brand-strong)]">
           editor
         </Link>
         .

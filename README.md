@@ -2,6 +2,12 @@
 
 MJ Tool is a personal web app for MJML email development. It lets you paste MJML, convert it to HTML, preview the result, inspect the generated markup, run rule-based quality checks, and tune analyzer behavior through saved settings.
 
+## Screenshots
+
+| Editor / Preview | Analyze |
+| --- | --- |
+| ![MJ Tool editor preview](docs/screenshots/editor-preview.png) | ![MJ Tool analyze screen](docs/screenshots/analyze-screen.png) |
+
 ## Features
 
 - MJML editor with manual preview refresh
