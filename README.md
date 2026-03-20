@@ -8,10 +8,6 @@
 
 `MJ Tool` is a local web app for building and reviewing MJML email templates in one place. Write MJML, convert it to HTML, preview the output, inspect generated markup, and run rule-based checks without bouncing between separate tools.
 
-## Screenshot
-
-![MJ Tool screenshot](./public/screenshots/mjtool.png)
-
 ## Screenshots
 
 | Editor / Preview | Analyze |
