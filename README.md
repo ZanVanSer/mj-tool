@@ -12,6 +12,12 @@
 
 ![MJ Tool screenshot](./public/screenshots/mjtool.png)
 
+## Screenshots
+
+| Editor / Preview | Analyze |
+| --- | --- |
+| ![MJ Tool editor preview](docs/screenshots/editor-preview.png) | ![MJ Tool analyze screen](docs/screenshots/analyze-screen.png) |
+
 ## Features
 
 - Edit MJML in a dedicated code editor

@@ -7,9 +7,9 @@ type AnalysisStatCardProps = {
 
 const TONE_STYLES = {
   neutral: "text-slate-950",
-  success: "text-emerald-600",
-  warning: "text-amber-500",
-  danger: "text-rose-500",
+  success: "text-emerald-700",
+  warning: "text-amber-600",
+  danger: "text-rose-700",
 } as const;
 
 export function AnalysisStatCard({
@@ -19,15 +19,13 @@ export function AnalysisStatCard({
   isLoading,
 }: AnalysisStatCardProps) {
   return (
-    <div className="rounded-[26px] border border-slate-200 bg-white px-5 py-5 shadow-[0_12px_40px_rgba(148,163,184,0.08)]">
-      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-        {label}
-      </p>
-      <div className="mt-4">
+    <div className="rounded-[6px] border border-[var(--color-border)] bg-slate-50 px-5 py-4.5">
+      <p className="text-[13px] font-medium text-slate-500">{label}</p>
+      <div className="mt-3">
         {isLoading ? (
-          <div className="h-9 w-24 animate-pulse rounded-xl bg-slate-100" />
+          <div className="h-9 w-24 animate-pulse rounded-[4px] bg-slate-200" />
         ) : (
-          <p className={`text-4xl font-semibold tracking-tight ${TONE_STYLES[tone]}`}>
+          <p className={`text-[30px] font-semibold tracking-[-0.02em] ${TONE_STYLES[tone]}`}>
             {value}
           </p>
         )}

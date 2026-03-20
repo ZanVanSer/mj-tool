@@ -11,9 +11,9 @@ type AnalysisCategoryCardProps = {
 };
 
 const STATUS_STYLES = {
-  pass: "bg-emerald-100 text-emerald-700",
-  warning: "bg-amber-100 text-amber-700",
-  error: "bg-rose-100 text-rose-700",
+  pass: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  warning: "border-amber-200 bg-amber-50 text-amber-700",
+  error: "border-rose-200 bg-rose-50 text-rose-700",
 } as const;
 
 export function AnalysisCategoryCard({
@@ -32,19 +32,19 @@ export function AnalysisCategoryCard({
   }
 
   return (
-    <div className="overflow-hidden rounded-[26px] border border-slate-200 bg-white shadow-[0_12px_40px_rgba(148,163,184,0.08)]">
+    <div className="overflow-hidden border border-[var(--color-border)] bg-white">
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left"
+        className="flex w-full items-center justify-between gap-4 px-5 py-4.5 text-left transition-colors hover:bg-slate-50"
       >
         <div className="min-w-0">
-          <h3 className="text-lg font-semibold text-slate-950">{category.name}</h3>
-          <p className="mt-1 text-sm text-slate-500">{category.summary}</p>
+          <h3 className="text-[17px] font-semibold text-slate-950">{category.name}</h3>
+          <p className="mt-1 text-[14px] leading-6 text-slate-500">{category.summary}</p>
         </div>
         <div className="flex items-center gap-3">
           <span
-            className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${
+            className={`inline-flex rounded-[6px] border px-2.5 py-1 text-xs font-medium ${
               STATUS_STYLES[category.status]
             }`}
           >
@@ -64,11 +64,11 @@ export function AnalysisCategoryCard({
             {category.checks.map((check) => (
               <div
                 key={check.id}
-                className="rounded-2xl border border-slate-100 bg-slate-50/60 px-4 py-3"
+                className="rounded-[6px] border border-slate-200 bg-slate-50 px-4 py-3.5"
               >
                 <div className="flex items-start gap-3">
                   <span
-                    className={`mt-2 h-2.5 w-2.5 rounded-full ${
+                    className={`mt-2 h-2 w-2 ${
                       check.status === "pass"
                         ? "bg-emerald-500"
                         : check.status === "warning"
@@ -78,10 +78,10 @@ export function AnalysisCategoryCard({
                   />
                   <div className="min-w-0 space-y-2">
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">
+                      <p className="text-[14px] font-semibold text-slate-900">
                         {check.name}
                       </p>
-                      <p className="text-sm leading-6 text-slate-600">
+                      <p className="text-[14px] leading-6 text-slate-600">
                         {check.message}
                       </p>
                     </div>
@@ -90,7 +90,7 @@ export function AnalysisCategoryCard({
                         {check.flagged.map((item) => (
                           <span
                             key={item}
-                            className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700"
+                            className="rounded-[6px] border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs text-amber-700"
                           >
                             {item}
                           </span>
@@ -102,7 +102,7 @@ export function AnalysisCategoryCard({
                         <button
                           type="button"
                           onClick={() => toggleCheck(check.id)}
-                          className="text-sm font-medium text-sky-700 transition hover:text-sky-800"
+                          className="text-sm font-medium text-[var(--color-brand)] transition-colors hover:text-[var(--color-brand-strong)]"
                         >
                           {expandedChecks.includes(check.id)
                             ? `Hide ${check.findings.length} issue details`
@@ -114,13 +114,13 @@ export function AnalysisCategoryCard({
                             {check.findings.map((finding) => (
                               <div
                                 key={finding.id}
-                                className="rounded-2xl border border-slate-200 bg-white px-4 py-3"
+                                className="rounded-[6px] border border-slate-200 bg-white px-4 py-3"
                               >
-                                <div className="mb-2 flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                                <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
                                   <span>{finding.label ?? "Finding"}</span>
                                   {finding.line ? <span>Line {finding.line}</span> : null}
                                 </div>
-                                <pre className="overflow-x-auto rounded-xl bg-slate-950 px-3 py-3 font-mono text-xs leading-6 text-slate-200">
+                                <pre className="overflow-x-auto rounded-[4px] border border-slate-800 bg-slate-950 px-3 py-3 font-mono text-xs leading-6 text-slate-200">
                                   <code>{finding.snippet}</code>
                                 </pre>
                               </div>

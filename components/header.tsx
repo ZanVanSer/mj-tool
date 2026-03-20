@@ -21,20 +21,20 @@ export function AppHeader() {
   const router = useRouter();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/78 backdrop-blur-xl">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+    <header className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
+      <div className="mx-auto flex w-full max-w-[1360px] flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb,#4f46e5)] text-white shadow-[0_14px_30px_rgba(37,99,235,0.32)]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-[6px] border border-[var(--color-border)] bg-slate-900 text-white">
             <MailIcon />
           </div>
           <div>
-            <p className="text-lg font-semibold tracking-tight text-slate-950">
+            <p className="text-[15px] font-semibold tracking-[-0.01em] text-slate-950">
               MJ Tool
             </p>
           </div>
         </Link>
 
-        <nav className="flex flex-wrap items-center justify-start gap-2 lg:justify-end">
+        <nav className="flex flex-wrap items-center gap-1.5">
           {NAV_ITEMS.map((item) => {
             const isActive =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -44,10 +44,10 @@ export function AppHeader() {
                 key={item.href}
                 type="button"
                 onClick={() => router.push(item.href)}
-                className={`inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium transition ${
+                className={`inline-flex items-center justify-center rounded-[6px] border px-3.5 py-2 text-[14px] transition-colors ${
                   isActive
-                    ? "bg-[linear-gradient(135deg,#2563eb,#4f46e5)] text-white shadow-[0_14px_24px_rgba(37,99,235,0.22)] hover:brightness-105"
-                    : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                    ? "border-slate-900 bg-slate-900 text-white"
+                    : "border-transparent text-slate-600 hover:border-[var(--color-border)] hover:bg-slate-50 hover:text-slate-950"
                 }`}
               >
                 {item.label}

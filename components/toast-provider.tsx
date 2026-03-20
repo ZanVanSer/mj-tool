@@ -58,7 +58,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`pointer-events-auto rounded-2xl border px-4 py-3 text-sm shadow-[0_18px_50px_rgba(15,23,42,0.18)] backdrop-blur ${
+            className={`pointer-events-auto border px-4 py-3 text-sm ${
               toast.tone === "success"
                 ? "border-emerald-200 bg-white text-emerald-700"
                 : toast.tone === "warning"
